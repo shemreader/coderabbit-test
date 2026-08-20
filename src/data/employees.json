@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "name": "John Doe",
+    "department": "Engineering"
+  },
+  {
+    "id": 2,
+    "name": "Sarah Cohen",
+    "department": "Product"
+  },
+  {
+    "id": 3,
+    "name": "David Levi",
+    "department": "Operations"
+  }
+]
