@@ -1,0 +1,5 @@
+service:
+  name: emp api
+  identifier: emp_api
+  orgIdentifier: default
+  projectIdentifier: shemer_test
