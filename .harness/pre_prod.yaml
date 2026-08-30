@@ -1,0 +1,8 @@
+environment:
+  name: pre prod
+  identifier: pre_prod
+  description: ""
+  tags: {}
+  type: PreProduction
+  orgIdentifier: default
+  projectIdentifier: shemer_test
