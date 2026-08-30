@@ -1,0 +1,13 @@
+infrastructureDefinition:
+  name: k8s infra
+  identifier: k8s_infra
+  orgIdentifier: default
+  projectIdentifier: shemer_test
+  environmentRef: pre_prod
+  deploymentType: Kubernetes
+  type: KubernetesDirect
+  spec:
+    connectorRef: k8s_cluster
+    namespace: shemer
+    releaseName: release-<+INFRA_KEY_SHORT_ID>
+  allowSimultaneousDeployments: false
