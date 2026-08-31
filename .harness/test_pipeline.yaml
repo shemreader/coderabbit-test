@@ -1,0 +1,84 @@
+pipeline:
+  projectIdentifier: shemer_test
+  orgIdentifier: default
+  tags: {}
+  properties:
+    ci:
+      codebase:
+        connectorRef: shemer_github
+        build: <+input>
+  stages:
+    - stage:
+        name: build
+        identifier: build
+        description: ""
+        type: CI
+        spec:
+          cloneCodebase: true
+          caching:
+            enabled: true
+            override: true
+          buildIntelligence:
+            enabled: true
+          infrastructure:
+            type: KubernetesDirect
+            spec:
+              connectorRef: k8s_cluster
+              namespace: harness-delegate-ng
+              serviceAccountName: shemer-delegate
+              automountServiceAccountToken: true
+              nodeSelector: {}
+              os: Linux
+          execution:
+            steps:
+              - step:
+                  type: BuildAndPushDockerRegistry
+                  name: Build And Push GHCR
+                  identifier: BuildAndPushDockerRegistry_1
+                  spec:
+                    connectorRef: ahemer_ghcr
+                    repo: ghcr.io/shemreader/coderabbit-test
+                    tags:
+                      - <+pipeline.sequenceId>
+                      - latest
+    - stage:
+        name: deploy
+        identifier: deploy
+        description: ""
+        type: Deployment
+        spec:
+          deploymentType: Kubernetes
+          service:
+            serviceRef: emp_api
+          environment:
+            environmentRef: pre_prod
+            deployToAll: false
+            infrastructureDefinitions:
+              - identifier: k8s_infra
+          execution:
+            steps:
+              - step:
+                  name: Rollout Deployment
+                  identifier: rolloutDeployment
+                  type: K8sRollingDeploy
+                  timeout: 10m
+                  spec:
+                    skipDryRun: false
+                    pruningEnabled: false
+            rollbackSteps:
+              - step:
+                  name: Rollback Rollout Deployment
+                  identifier: rollbackRolloutDeployment
+                  type: K8sRollingRollback
+                  timeout: 10m
+                  spec:
+                    pruningEnabled: false
+        tags: {}
+        failureStrategies:
+          - onFailure:
+              errors:
+                - AllErrors
+              action:
+                type: StageRollback
+  identifier: test_pipeline
+  name: test pipeline
