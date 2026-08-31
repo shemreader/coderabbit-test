@@ -1,3 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: emp-api
+spec:
+  selector:
+    app: emp-api
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: ClusterIP
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -16,7 +29,7 @@ spec:
     spec:
       containers:
         - name: emp-api
-          image: ghcr.io/shemreader/coderabbit-test:<+artifact.tag>
+          image: {{.Values.image.repository}}:{{.Values.image.tag}}
           ports:
             - containerPort: 8080
           resources:
@@ -26,16 +39,3 @@ spec:
             limits:
               memory: "256Mi"
               cpu: "500m"
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: emp-api
-spec:
-  selector:
-    app: emp-api
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 8080
-  type: ClusterIP
