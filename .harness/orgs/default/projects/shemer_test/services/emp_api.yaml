@@ -16,7 +16,7 @@ service:
                   connectorRef: shemer_github
                   gitFetchType: Branch
                   paths:
-                    - /.harness/orgs/default/projects/shemer_test/services
+                    - k8s
                   branch: main
               skipResourceVersioning: false
               enableDeclarativeRollback: false
