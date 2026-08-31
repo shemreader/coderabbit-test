@@ -4,5 +4,20 @@ service:
   orgIdentifier: default
   projectIdentifier: shemer_test
   serviceDefinition:
-    spec: {}
+    spec:
+      manifests:
+        - manifest:
+            identifier: k8s_manifest
+            type: K8sManifest
+            spec:
+              store:
+                type: Github
+                spec:
+                  connectorRef: shemer_github
+                  gitFetchType: Branch
+                  paths:
+                    - /.harness/orgs/default/projects/shemer_test/services
+                  branch: main
+              skipResourceVersioning: false
+              enableDeclarativeRollback: false
     type: Kubernetes
