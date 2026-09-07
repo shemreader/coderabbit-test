@@ -1,0 +1,27 @@
+inputSet:
+  name: default
+  identifier: default
+  orgIdentifier: default
+  projectIdentifier: shemer_test
+  pipeline:
+    identifier: test_pipeline
+    properties:
+      ci:
+        codebase:
+          build:
+            type: branch
+            spec:
+              branch: main
+    stages:
+      - stage:
+          identifier: deploy
+          type: Deployment
+          spec:
+            service:
+              serviceInputs:
+                serviceDefinition:
+                  type: Kubernetes
+                  spec:
+                    artifacts:
+                      primary:
+                        primaryArtifactRef: coderabbittest
