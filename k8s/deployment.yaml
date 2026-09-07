@@ -29,7 +29,15 @@ spec:
     spec:
       containers:
         - name: emp-api
-          image: <+artifact.image>
+          image: {{ .Values.image }}
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: RuntimeDefault
           ports:
             - containerPort: 8080
           resources:
