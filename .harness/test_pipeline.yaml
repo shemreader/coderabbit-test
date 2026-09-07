@@ -50,6 +50,14 @@ pipeline:
           deploymentType: Kubernetes
           service:
             serviceRef: emp_api
+            serviceInputs:
+              serviceDefinition:
+                type: Kubernetes
+                spec:
+                  artifacts:
+                    primary:
+                      primaryArtifactRef: <+input>
+                      sources: <+input>
           environment:
             environmentRef: pre_prod
             deployToAll: false
