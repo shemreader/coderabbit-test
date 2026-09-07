@@ -20,4 +20,15 @@ service:
                   branch: main
               skipResourceVersioning: false
               enableDeclarativeRollback: false
+      artifacts:
+        primary:
+          primaryArtifactRef: <+input>
+          sources:
+            - spec:
+                connectorRef: ahemer_ghcr
+                imagePath: ghcr.io/shemreader/coderabbit-test
+                tag: <+pipeline.sequenceId>
+                digest: ""
+              identifier: coderabbittest
+              type: DockerRegistry
     type: Kubernetes
