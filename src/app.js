@@ -18,6 +18,12 @@ app.get("/version", (req, res) => {
     });
 });
 
+app.get("/demo", (req, res) => {
+    res.json({
+        shemer: "sucks"
+    });
+});
+
 app.use("/employees", employeeRoutes);
 
 module.exports = app;
