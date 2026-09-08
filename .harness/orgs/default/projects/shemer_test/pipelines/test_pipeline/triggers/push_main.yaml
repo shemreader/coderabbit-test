@@ -1,0 +1,37 @@
+trigger:
+  name: push main
+  identifier: push_main
+  enabled: true
+  description: "Runs the CI pipeline on every push to main, except commits made by the pipeline's own GitOps-manifest-update step (filtered via [skip ci])."
+  tags: {}
+  projectIdentifier: shemer_test
+  orgIdentifier: default
+  pipelineIdentifier: test_pipeline
+  source:
+    type: Webhook
+    spec:
+      type: Github
+      spec:
+        type: Push
+        spec:
+          connectorRef: shemer_github
+          autoAbortPreviousExecutions: true
+          payloadConditions:
+            - key: targetBranch
+              operator: Equals
+              value: main
+            - key: <+trigger.payload.head_commit.message>
+              operator: NotContains
+              value: "[skip ci]"
+          headerConditions: []
+          repoName: coderabbit-test
+          actions: []
+  inputYaml: |
+    pipeline:
+      properties:
+        ci:
+          codebase:
+            build:
+              type: branch
+              spec:
+                branch: <+trigger.branch>

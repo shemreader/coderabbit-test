@@ -43,6 +43,16 @@ pipeline:
                       - latest
               - step:
                   type: Run
+                  name: Security Scan
+                  identifier: securityScan
+                  spec:
+                    shell: Sh
+                    image: aquasec/trivy:latest
+                    command: |-
+                      trivy image --exit-code 0 --severity HIGH,CRITICAL \
+                        ghcr.io/shemreader/coderabbit-test:<+pipeline.sequenceId>
+              - step:
+                  type: Run
                   name: Update GitOps Manifest
                   identifier: updateGitOpsManifest
                   spec:
