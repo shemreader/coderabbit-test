@@ -7,8 +7,8 @@ spec:
     app: emp-api
   ports:
     - protocol: TCP
-      port: 80
-      targetPort: 8080
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}
   type: ClusterIP
 ---
 apiVersion: apps/v1
@@ -18,7 +18,7 @@ metadata:
   labels:
     app: emp-api
 spec:
-  replicas: 1
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       app: emp-api
@@ -29,13 +29,8 @@ spec:
     spec:
       containers:
         - name: emp-api
-          image: {{ .Values.image }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           ports:
-            - containerPort: 8080
+            - containerPort: {{ .Values.service.targetPort }}
           resources:
-            requests:
-              memory: "128Mi"
-              cpu: "100m"
-            limits:
-              memory: "256Mi"
-              cpu: "500m"
+            {{- toYaml .Values.resources | nindent 12 }}

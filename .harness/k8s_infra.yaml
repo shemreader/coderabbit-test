@@ -1,3 +1,7 @@
+# Unused: Harness no longer deploys to the cluster directly. The pipeline's
+# "build" stage now ends by pushing an image-tag bump to k8s/values.yaml, and
+# ArgoCD (installed separately, see argocd/application.yaml) picks it up from
+# there. Kept for reference / rollback to a native Harness Kubernetes deploy.
 infrastructureDefinition:
   name: k8s infra
   identifier: k8s_infra
