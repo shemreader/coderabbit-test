@@ -2,7 +2,7 @@ replicaCount: 2
 
 image:
   repository: ghcr.io/shemreader/coderabbit-test
-  tag: "20"
+  tag: latest
 
 service:
   port: 80
