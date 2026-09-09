@@ -137,11 +137,6 @@ pipeline:
                   artifacts:
                     primary:
                       primaryArtifactRef: coderabbittest
-                      sources:
-                        - identifier: coderabbittest
-                          type: DockerRegistry
-                          spec:
-                            tag: <+pipeline.sequenceId>
           environment:
             environmentRef: dev
             deployToAll: false
@@ -186,11 +181,6 @@ pipeline:
                   artifacts:
                     primary:
                       primaryArtifactRef: coderabbittest
-                      sources:
-                        - identifier: coderabbittest
-                          type: DockerRegistry
-                          spec:
-                            tag: <+pipeline.sequenceId>
           environment:
             environmentRef: pre_prod
             deployToAll: false
@@ -263,11 +253,6 @@ pipeline:
                   artifacts:
                     primary:
                       primaryArtifactRef: coderabbittest
-                      sources:
-                        - identifier: coderabbittest
-                          type: DockerRegistry
-                          spec:
-                            tag: <+pipeline.sequenceId>
           environment:
             environmentRef: prod
             deployToAll: false
