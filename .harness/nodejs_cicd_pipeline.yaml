@@ -25,12 +25,14 @@ pipeline:
             enabled: true
             paths:
               - node_modules
-          platform:
-            os: Linux
-            arch: Amd64
-          runtime:
-            type: Cloud
-            spec: {}
+          infrastructure:
+            type: KubernetesDirect
+            spec:
+              connectorRef: k8s_cluster
+              namespace: harness-builds
+              automountServiceAccountToken: true
+              nodeSelector: {}
+              os: Linux
           execution:
             steps:
               - step:
@@ -38,6 +40,8 @@ pipeline:
                   name: Install Dependencies
                   identifier: install_dependencies
                   spec:
+                    connectorRef: account.harnessImage
+                    image: node:18
                     shell: Sh
                     command: |
                       npm ci
@@ -46,6 +50,8 @@ pipeline:
                   name: Lint
                   identifier: lint
                   spec:
+                    connectorRef: account.harnessImage
+                    image: node:18
                     shell: Sh
                     command: |
                       npm run lint || echo "No lint script found, skipping"
@@ -54,6 +60,8 @@ pipeline:
                   name: Unit Tests
                   identifier: unit_tests
                   spec:
+                    connectorRef: account.harnessImage
+                    image: node:18
                     shell: Sh
                     command: |
                       npm test || echo "No test script found, skipping"
@@ -82,12 +90,14 @@ pipeline:
         type: SecurityTests
         spec:
           cloneCodebase: true
-          platform:
-            os: Linux
-            arch: Amd64
-          runtime:
-            type: Cloud
-            spec: {}
+          infrastructure:
+            type: KubernetesDirect
+            spec:
+              connectorRef: k8s_cluster
+              namespace: harness-builds
+              automountServiceAccountToken: true
+              nodeSelector: {}
+              os: Linux
           execution:
             steps:
               - step:
