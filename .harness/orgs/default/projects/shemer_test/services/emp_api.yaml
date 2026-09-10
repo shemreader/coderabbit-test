@@ -8,7 +8,7 @@ service:
       manifests:
         - manifest:
             identifier: k8s_manifest
-            type: K8sManifest
+            type: HelmChart
             spec:
               store:
                 type: Github
