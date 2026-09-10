@@ -15,11 +15,11 @@ service:
                 spec:
                   connectorRef: shemer_github
                   gitFetchType: Branch
-                  paths:
-                    - k8s
+                  folderPath: k8s/
                   branch: main
               skipResourceVersioning: false
               enableDeclarativeRollback: false
+              helmVersion: V2
       artifacts:
         primary:
           primaryArtifactRef: <+input>
