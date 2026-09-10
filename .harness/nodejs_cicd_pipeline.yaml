@@ -29,7 +29,7 @@ pipeline:
             type: KubernetesDirect
             spec:
               connectorRef: k8s_cluster
-              namespace: harness-builds
+              namespace: harness-delegate-ng
               automountServiceAccountToken: true
               nodeSelector: {}
               os: Linux
@@ -94,7 +94,7 @@ pipeline:
             type: KubernetesDirect
             spec:
               connectorRef: k8s_cluster
-              namespace: harness-builds
+              namespace: harness-delegate-ng
               automountServiceAccountToken: true
               nodeSelector: {}
               os: Linux
