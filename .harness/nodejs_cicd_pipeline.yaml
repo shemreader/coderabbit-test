@@ -40,7 +40,7 @@ pipeline:
                   name: Install Dependencies
                   identifier: install_dependencies
                   spec:
-                    connectorRef: account.harnessImage
+                    connectorRef: account.Docker_Hub_Public
                     image: node:18
                     shell: Sh
                     command: |
@@ -50,7 +50,7 @@ pipeline:
                   name: Lint
                   identifier: lint
                   spec:
-                    connectorRef: account.harnessImage
+                    connectorRef: account.Docker_Hub_Public
                     image: node:18
                     shell: Sh
                     command: |
@@ -60,7 +60,7 @@ pipeline:
                   name: Unit Tests
                   identifier: unit_tests
                   spec:
-                    connectorRef: account.harnessImage
+                    connectorRef: account.Docker_Hub_Public
                     image: node:18
                     shell: Sh
                     command: |
