@@ -78,12 +78,15 @@ pipeline:
                     dockerfile: Dockerfile
                     context: .
                     optimize: true
+          buildIntelligence:
+            enabled: true
         failureStrategies:
           - onFailure:
               errors:
                 - AllErrors
               action:
                 type: MarkAsFailure
+        description: ""
     - stage:
         name: Security Scan
         identifier: security_scan
