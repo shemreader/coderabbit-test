@@ -19,7 +19,7 @@ service:
                   branch: main
               skipResourceVersioning: false
               enableDeclarativeRollback: false
-              helmVersion: V2
+              helmVersion: V3
       artifacts:
         primary:
           primaryArtifactRef: <+input>
