@@ -8,6 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 npm start   # run the server (src/server.js), PORT env var defaults to 3000
 npm run dev # run with nodemon for auto-reload
 npm test    # run the Jest test suite (tests/*.test.js)
+npm run lint # run ESLint (flat config in eslint.config.js)
 ```
 
 Run a single test file: `npx jest tests/employees.test.js`
@@ -31,8 +32,8 @@ The demo is a push-based GitOps split: **Harness = CI only** (build, push image,
 - `argocd/application.yaml` is the ArgoCD `Application` CR (source: this repo's `k8s/` Helm chart; destination: the `shemer` namespace; `syncPolicy.automated` with prune+selfHeal). Applied once to the cluster's `argocd` namespace — not consumed by Harness.
 - `.harness/` contains the Harness CI pipeline (Harness Git Experience — these are live entities synced from this repo):
   - `pipelines/test_pipeline/triggers/push_main.yaml` fires the pipeline on every push to `main`, filtering out the pipeline's own manifest-update commits via a `[skip ci]` payload condition (otherwise it would trigger itself in a loop).
-  - The `build` stage's `BuildAndPushDockerRegistry` step builds and pushes the Docker image to `ghcr.io/shemreader/coderabbit-test`, tagged `<+pipeline.sequenceId>` and `latest`.
-  - A `Run` step ("Security Scan") runs `trivy image` against the pushed tag, reporting HIGH/CRITICAL findings without failing the build (`--exit-code 0`).
+  - The `build` stage follows the golden-template CI flow, adapted for Node.js (no paid tools — Sonar/Snyk/Checkmarx are intentionally skipped): `Install Dependencies` (`npm ci`) → `Unit Tests` (`npm test`) → `Code Quality` (`npm run lint`, ESLint) → `SAST Scan` (Semgrep, `p/javascript` + `p/owasp-top-ten` rulesets) → `Dependency Scan` (`npm audit --audit-level=high`) → `SBOM Generation` (`cyclonedx-npm`, writes `sbom.json`) → `BuildAndPushDockerRegistry` (pushes to `ghcr.io/shemreader/coderabbit-test`, tagged `<+pipeline.sequenceId>` and `latest`) → `Container Scan` (`trivy image` against the pushed tag) → `Update GitOps Manifest`.
+  - `SAST Scan`, `Dependency Scan`, and `Container Scan` all report findings without failing the build (matching the pre-existing Trivy `--exit-code 0` pattern) — this is a demo pipeline, not a gated one.
   - A final `Run` step ("Update GitOps Manifest") `sed`s the new tag into `k8s/values.yaml` and `git push`es straight to `main` using a `github_pat` secret and a `[skip ci]` commit message — this commit is what ArgoCD reacts to.
   - `.harness/orgs/default/projects/shemer_test/services/emp_api.yaml`, `pre_prod.yaml` (environment), and `k8s_infra.yaml` (infra definition) are leftover from an earlier native-Kubernetes-deploy version of this pipeline and are no longer referenced by any stage — kept for reference only.
 - **Manual, non-git prerequisites**: ArgoCD itself must be installed in the cluster (official manifests into an `argocd` namespace) and `argocd/application.yaml` applied once; Harness needs a `github_pat` secret (GitHub PAT with push access) for the manifest-update step; the `push_main` trigger needs a GitHub webhook registered against Harness (usually auto-registered via the connector, verify under the repo's Settings → Webhooks).

@@ -32,6 +32,57 @@ pipeline:
           execution:
             steps:
               - step:
+                  type: Run
+                  name: Install Dependencies
+                  identifier: installDependencies
+                  spec:
+                    shell: Sh
+                    image: node:22-alpine
+                    command: npm ci
+              - step:
+                  type: Run
+                  name: Unit Tests
+                  identifier: unitTests
+                  spec:
+                    shell: Sh
+                    image: node:22-alpine
+                    command: npm test
+              - step:
+                  type: Run
+                  name: Code Quality
+                  identifier: codeQuality
+                  spec:
+                    shell: Sh
+                    image: node:22-alpine
+                    command: npm run lint
+              - step:
+                  type: Run
+                  name: SAST Scan
+                  identifier: sastScan
+                  spec:
+                    shell: Sh
+                    image: returntocorp/semgrep:latest
+                    command: |-
+                      semgrep scan --config p/javascript --config p/owasp-top-ten .
+              - step:
+                  type: Run
+                  name: Dependency Scan
+                  identifier: dependencyScan
+                  spec:
+                    shell: Sh
+                    image: node:22-alpine
+                    command: |-
+                      npm audit --audit-level=high || echo "vulnerabilities found (non-blocking)"
+              - step:
+                  type: Run
+                  name: SBOM Generation
+                  identifier: sbomGeneration
+                  spec:
+                    shell: Sh
+                    image: node:22-alpine
+                    command: |-
+                      npx --yes @cyclonedx/cyclonedx-npm --output-file sbom.json
+              - step:
                   type: BuildAndPushDockerRegistry
                   name: Build And Push GHCR
                   identifier: BuildAndPushDockerRegistry_1
@@ -43,8 +94,8 @@ pipeline:
                       - latest
               - step:
                   type: Run
-                  name: Security Scan
-                  identifier: securityScan
+                  name: Container Scan
+                  identifier: containerScan
                   spec:
                     shell: Sh
                     image: aquasec/trivy:latest
