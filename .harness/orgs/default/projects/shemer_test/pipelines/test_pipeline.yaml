@@ -55,6 +55,7 @@ pipeline:
                       type: AquaTrivy
                       spec:
                         image:
+                          type: docker_v2
                           name: ghcr.io/shemreader/coderabbit-test
                           tag: <+pipeline.sequenceId>
                           domain: ghcr.io
