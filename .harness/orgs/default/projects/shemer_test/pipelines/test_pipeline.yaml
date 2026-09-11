@@ -15,24 +15,6 @@ pipeline:
         template:
           templateRef: Golden_CI_Build_Template
           versionLabel: v1
-          templateInputs:
-            type: CI
-            variables:
-              - name: k8sConnectorRef
-                type: String
-                value: k8s_cluster
-              - name: buildNamespace
-                type: String
-                value: harness-delegate-ng
-              - name: buildServiceAccountName
-                type: String
-                value: shemer-delegate
-              - name: dockerConnectorRef
-                type: String
-                value: ahemer_ghcr
-              - name: imageRepository
-                type: String
-                value: ghcr.io/shemreader/coderabbit-test
     - stage:
         name: security scan
         identifier: security_scan
@@ -40,27 +22,6 @@ pipeline:
         template:
           templateRef: Golden_Security_Scan_Template
           versionLabel: v1
-          templateInputs:
-            type: SecurityTests
-            variables:
-              - name: k8sConnectorRef
-                type: String
-                value: k8s_cluster
-              - name: buildNamespace
-                type: String
-                value: harness-delegate-ng
-              - name: buildServiceAccountName
-                type: String
-                value: shemer-delegate
-              - name: imageRegistryDomain
-                type: String
-                value: ghcr.io
-              - name: imageRepository
-                type: String
-                value: ghcr.io/shemreader/coderabbit-test
-              - name: imageTag
-                type: String
-                value: <+pipeline.sequenceId>
     - stage:
         name: deploy to dev
         identifier: deploy_to_dev
@@ -128,15 +89,6 @@ pipeline:
         template:
           templateRef: Golden_Approval_Template
           versionLabel: v1
-          templateInputs:
-            type: Approval
-            variables:
-              - name: approverUserGroup
-                type: String
-                value: _project_all_users
-              - name: approvalMessage
-                type: String
-                value: Please review and approve deployment to Production
     - stage:
         name: deploy to production
         identifier: deploy_to_production
