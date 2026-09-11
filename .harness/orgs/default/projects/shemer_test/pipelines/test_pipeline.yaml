@@ -1,0 +1,24 @@
+pipeline:
+  name: test pipeline
+  identifier: test_pipeline
+  projectIdentifier: shemer_test
+  orgIdentifier: default
+  tags: {}
+  properties:
+    ci:
+      codebase:
+        connectorRef: shemer_github
+        build: <+input>
+  stages:
+    - stage:
+        name: build
+        identifier: build
+        template:
+          templateRef: Golden_CI_Build_Template
+          versionLabel: v1
+    - stage:
+        name: security
+        identifier: security
+        template:
+          templateRef: Golden_Security_Scan_Template
+          versionLabel: v1
