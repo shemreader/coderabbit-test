@@ -307,7 +307,7 @@ pipeline:
                   name: Production Health Check
                   identifier: production_health_check
                   spec:
-                    url: url: http://emp-api.<+infra.namespace>.svc.cluster.local/health
+                    url: http://emp-api.<+infra.namespace>.svc.cluster.local/health
                     method: GET
                     headers: []
                     assertion: <+httpResponseCode> == 200
