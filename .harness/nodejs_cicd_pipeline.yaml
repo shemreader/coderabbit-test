@@ -307,11 +307,13 @@ pipeline:
                   name: Production Health Check
                   identifier: production_health_check
                   spec:
-                    url: http://<+pipeline.stages.deploy_to_production.spec.environment.environmentRef>-service/healthservice
+                    url: http://<+pipeline.stages.deploy_to_production.spec.environment.environmentRef>-service/health
                     method: GET
                     headers: []
                     assertion: <+httpResponseCode> == 200
                     timeout: 30s
+                    inputVariables: []
+                    outputVariables: []
                   timeout: 1m
                   failureStrategies:
                     - onFailure:
