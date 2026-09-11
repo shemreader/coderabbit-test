@@ -78,6 +78,7 @@ pipeline:
                       artifacts:
                         primary:
                           primaryArtifactRef: coderabbittest
+                          sources: ""
               environment:
                 environmentRef: dev
                 infrastructureDefinitions:
