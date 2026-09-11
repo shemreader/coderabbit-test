@@ -13,7 +13,7 @@ pipeline:
         identifier: build
         description: ""
         template:
-          templateRef: org.Golden_CI_Build_Template
+          templateRef: Golden_CI_Build_Template
           versionLabel: v1
           templateInputs:
             type: CI
