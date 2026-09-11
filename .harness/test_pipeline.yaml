@@ -12,14 +12,34 @@ pipeline:
         name: build
         identifier: build
         description: ""
+        template:
+          templateRef: org.Golden_CI_Build_Template
+          versionLabel: v1
+          templateInputs:
+            type: CI
+            variables:
+              - name: k8sConnectorRef
+                type: String
+                value: k8s_cluster
+              - name: buildNamespace
+                type: String
+                value: harness-delegate-ng
+              - name: buildServiceAccountName
+                type: String
+                value: shemer-delegate
+              - name: dockerConnectorRef
+                type: String
+                value: ahemer_ghcr
+              - name: imageRepository
+                type: String
+                value: ghcr.io/shemreader/coderabbit-test
+    - stage:
+        name: update gitops manifest
+        identifier: update_gitops_manifest
+        description: ""
         type: CI
         spec:
           cloneCodebase: true
-          caching:
-            enabled: true
-            override: true
-          buildIntelligence:
-            enabled: true
           infrastructure:
             type: KubernetesDirect
             spec:
@@ -33,82 +53,12 @@ pipeline:
             steps:
               - step:
                   type: Run
-                  name: Install Dependencies
-                  identifier: installDependencies
-                  spec:
-                    shell: Sh
-                    image: node:22-alpine
-                    command: npm ci
-              - step:
-                  type: Run
-                  name: Unit Tests
-                  identifier: unitTests
-                  spec:
-                    shell: Sh
-                    image: node:22-alpine
-                    command: npm test
-              - step:
-                  type: Run
-                  name: Code Quality
-                  identifier: codeQuality
-                  spec:
-                    shell: Sh
-                    image: node:22-alpine
-                    command: npm run lint
-              - step:
-                  type: Run
-                  name: SAST Scan
-                  identifier: sastScan
-                  spec:
-                    shell: Sh
-                    image: returntocorp/semgrep:latest
-                    command: |-
-                      semgrep scan --config p/javascript --config p/owasp-top-ten .
-              - step:
-                  type: Run
-                  name: Dependency Scan
-                  identifier: dependencyScan
-                  spec:
-                    shell: Sh
-                    image: node:22-alpine
-                    command: |-
-                      npm audit --audit-level=high || echo "vulnerabilities found (non-blocking)"
-              - step:
-                  type: Run
-                  name: SBOM Generation
-                  identifier: sbomGeneration
-                  spec:
-                    shell: Sh
-                    image: node:22-alpine
-                    command: |-
-                      npx --yes @cyclonedx/cyclonedx-npm --output-file sbom.json
-              - step:
-                  type: BuildAndPushDockerRegistry
-                  name: Build And Push GHCR
-                  identifier: BuildAndPushDockerRegistry_1
-                  spec:
-                    connectorRef: ahemer_ghcr
-                    repo: ghcr.io/shemreader/coderabbit-test
-                    tags:
-                      - <+pipeline.sequenceId>
-                      - latest
-              - step:
-                  type: Run
-                  name: Container Scan
-                  identifier: containerScan
-                  spec:
-                    shell: Sh
-                    image: aquasec/trivy:latest
-                    command: |-
-                      trivy image --exit-code 0 --severity HIGH,CRITICAL \
-                        ghcr.io/shemreader/coderabbit-test:<+pipeline.sequenceId>
-              - step:
-                  type: Run
                   name: Update GitOps Manifest
                   identifier: updateGitOpsManifest
                   spec:
                     shell: Sh
                     image: alpine/git
+                    connectorRef: account.Docker_Hub_Public
                     envVariables:
                       GITHUB_TOKEN: <+secrets.getValue("github_pat")>
                     command: |-
