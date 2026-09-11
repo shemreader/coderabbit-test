@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__harness__harness_describe",
+      "mcp__harness__harness_create",
+      "mcp__harness__harness_get",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "mcp__harness__harness_delete",
+      "Bash(git push *)",
+      "Bash(git fetch *)",
+      "Bash(git rebase *)",
+      "mcp__harness__harness_update",
+      "Bash(cp .harness/test_pipeline.yaml .harness/orgs/default/projects/shemer_test/pipelines/test_pipeline.yaml)",
+      "Bash(rm .harness/test_pipeline.yaml)",
+      "Bash(git rm *)"
+    ]
+  }
+}
