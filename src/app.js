@@ -25,6 +25,13 @@ app.get("/demo", (req, res) => {
     });
 });
 
+app.get("/demonew", (req, res) => {
+    res.json({
+        shemer: "sucks",
+        scott: "rules"
+    });
+});
+
 app.use("/employees", employeeRoutes);
 
 module.exports = app;
