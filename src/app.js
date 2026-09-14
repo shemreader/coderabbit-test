@@ -18,13 +18,6 @@ app.get("/version", (req, res) => {
     });
 });
 
-app.get("/demo", (req, res) => {
-    res.json({
-        shemer: "sucks",
-        scott: "rules"
-    });
-});
-
 app.get("/demonew", (req, res) => {
     res.json({
         shemer: "sucks",
