@@ -63,6 +63,9 @@ pipeline:
         name: deploy to dev
         identifier: deploy_to_dev
         description: ""
+        when:
+          pipelineStatus: Success
+          condition: <+trigger.event> != "PR"
         template:
           templateRef: Golden_K8s_Deploy_Template
           versionLabel: v1
@@ -94,6 +97,9 @@ pipeline:
         name: deploy to pre-prod
         identifier: deploy_to_pre_prod
         description: ""
+        when:
+          pipelineStatus: Success
+          condition: <+trigger.event> != "PR"
         template:
           templateRef: Golden_K8s_Deploy_Template
           versionLabel: v1
@@ -124,6 +130,9 @@ pipeline:
         name: production approval
         identifier: production_approval
         description: ""
+        when:
+          pipelineStatus: Success
+          condition: <+trigger.event> != "PR"
         template:
           templateRef: Golden_Approval_Template
           versionLabel: v1
@@ -144,6 +153,9 @@ pipeline:
         name: deploy to production
         identifier: deploy_to_production
         description: ""
+        when:
+          pipelineStatus: Success
+          condition: <+trigger.event> != "PR"
         template:
           templateRef: Golden_K8s_Deploy_Template
           versionLabel: v1
