@@ -13,7 +13,25 @@
       "mcp__harness__harness_update",
       "Bash(cp .harness/test_pipeline.yaml .harness/orgs/default/projects/shemer_test/pipelines/test_pipeline.yaml)",
       "Bash(rm .harness/test_pipeline.yaml)",
-      "Bash(git rm *)"
+      "Bash(git rm *)",
+      "mcp__harness__harness_diagnose",
+      "Bash(python3 -c \"print\\('ok'\\)\")",
+      "Bash(python3 -)",
+      "Bash(docker --version)",
+      "Bash(docker run *)",
+      "Bash(docker build *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3011/health)",
+      "Bash(curl -s http://localhost:3011/employees)",
+      "Bash(docker exec *)",
+      "Bash(docker stop *)",
+      "Bash(python3 -c ' *)",
+      "Bash(docker rmi *)",
+      "Bash(npm test *)",
+      "Bash(node -e ' *)",
+      "Bash(npm view *)",
+      "Bash(npm update *)",
+      "Bash(node -e \"console.log\\(require\\('./package-lock.json'\\).packages['node_modules/qs'].version\\)\")",
+      "Bash(npm audit *)"
     ]
   }
 }
