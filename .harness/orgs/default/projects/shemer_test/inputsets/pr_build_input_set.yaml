@@ -1,0 +1,157 @@
+inputSet:
+  name: PR Build Input Set
+  identifier: pr_build_input_set
+  orgIdentifier: default
+  projectIdentifier: shemer_test
+  description: Input set for pull request builds - CI and security scan only, no deployments
+  tags:
+    environment: pr
+    ai_generated: ""
+  pipeline:
+    identifier: test_pipeline
+    properties:
+      ci:
+        codebase:
+          connectorRef: shemer_github
+          repoName: coderabbit-test
+          build:
+            type: PR
+            spec:
+              number: <+trigger.prNumber>
+    stages:
+      - stage:
+          identifier: build
+          type: CI
+          template:
+            templateInputs:
+              type: CI
+              spec:
+                infrastructure:
+                  type: KubernetesDirect
+                  spec:
+                    connectorRef: k8s_cluster
+                    namespace: harness-delegate-ng
+                    serviceAccountName: shemer-delegate
+                execution:
+                  steps:
+                    - step:
+                        identifier: buildAndPushImage
+                        type: BuildAndPushDockerRegistry
+                        spec:
+                          connectorRef: ahemer_ghcr
+                          repo: ghcr.io/shemreader/coderabbit-test
+      - stage:
+          identifier: security_scan
+          type: SecurityTests
+          template:
+            templateInputs:
+              type: SecurityTests
+              spec:
+                infrastructure:
+                  type: KubernetesDirect
+                  spec:
+                    connectorRef: k8s_cluster
+                    namespace: harness-delegate-ng
+                    serviceAccountName: shemer-delegate
+                execution:
+                  steps:
+                    - step:
+                        identifier: container_scan
+                        type: AquaTrivy
+                        spec:
+                          image:
+                            type: docker_v2
+                            name: ghcr.io/shemreader/coderabbit-test
+                            domain: ghcr.io
+      - stage:
+          identifier: deploy_to_dev
+          type: Deployment
+          template:
+            templateInputs:
+              type: Deployment
+              spec:
+                service:
+                  serviceRef: emp_api
+                  serviceInputs:
+                    serviceDefinition:
+                      type: Kubernetes
+                      spec:
+                        artifacts:
+                          primary:
+                            primaryArtifactRef: coderabbittest
+                environment:
+                  environmentRef: dev
+                  infrastructureDefinitions:
+                    - identifier: k8s_dev
+                execution:
+                  steps:
+                    - step:
+                        identifier: health_check
+                        type: Http
+                        spec:
+                          url: http://emp-api.dev.svc.cluster.local/health
+      - stage:
+          identifier: deploy_to_pre_prod
+          type: Deployment
+          template:
+            templateInputs:
+              type: Deployment
+              spec:
+                service:
+                  serviceRef: emp_api
+                  serviceInputs:
+                    serviceDefinition:
+                      type: Kubernetes
+                      spec:
+                        artifacts:
+                          primary:
+                            primaryArtifactRef: coderabbittest
+                environment:
+                  environmentRef: pre_prod
+                  infrastructureDefinitions:
+                    - identifier: k8s_pre_prod
+                execution:
+                  steps:
+                    - step:
+                        identifier: health_check
+                        type: Http
+                        spec:
+                          url: http://emp-api.pre-prod.svc.cluster.local/health
+      - stage:
+          identifier: production_approval
+          type: Approval
+          spec:
+            execution:
+              steps:
+                - step:
+                    identifier: approve_deployment
+                    type: HarnessApproval
+                    spec:
+                      approvalMessage: Please review and approve deployment to Production
+      - stage:
+          identifier: deploy_to_production
+          type: Deployment
+          template:
+            templateInputs:
+              type: Deployment
+              spec:
+                service:
+                  serviceRef: emp_api
+                  serviceInputs:
+                    serviceDefinition:
+                      type: Kubernetes
+                      spec:
+                        artifacts:
+                          primary:
+                            primaryArtifactRef: coderabbittest
+                environment:
+                  environmentRef: prod
+                  infrastructureDefinitions:
+                    - identifier: k8s_prod
+                execution:
+                  steps:
+                    - step:
+                        identifier: health_check
+                        type: Http
+                        spec:
+                          url: http://emp-api.prod.svc.cluster.local/health
