@@ -1,17 +1,22 @@
 pipeline:
+  name: test pipeline
+  identifier: test_pipeline
   projectIdentifier: shemer_test
   orgIdentifier: default
-  tags: {}
+  tags:
+    ai_generated: ""
   properties:
     ci:
       codebase:
-        connectorRef: shemer_github
+        connectorRef: <+input>
+        repoName: <+input>
         build: <+input>
   stages:
     - stage:
         name: build
         identifier: build
-        description: ""
+        description: "CI build stage using Golden CI Build Template"
+        type: CI
         template:
           templateRef: Golden_CI_Build_Template
           versionLabel: v1
@@ -21,21 +26,28 @@ pipeline:
               infrastructure:
                 type: KubernetesDirect
                 spec:
-                  connectorRef: k8s_cluster
-                  namespace: harness-delegate-ng
-                  serviceAccountName: shemer-delegate
+                  connectorRef: <+input>
+                  namespace: <+input>
+                  serviceAccountName: <+input>
               execution:
                 steps:
                   - step:
                       identifier: buildAndPushImage
                       type: BuildAndPushDockerRegistry
                       spec:
-                        connectorRef: ahemer_ghcr
-                        repo: ghcr.io/shemreader/coderabbit-test
+                        connectorRef: <+input>
+                        repo: <+input>
+        failureStrategies:
+          - onFailure:
+              errors:
+                - AllErrors
+              action:
+                type: MarkAsFailure
     - stage:
         name: security scan
         identifier: security_scan
-        description: ""
+        description: "Security scan stage using Golden Security Scan Template"
+        type: SecurityTests
         template:
           templateRef: Golden_Security_Scan_Template
           versionLabel: v1
@@ -45,9 +57,9 @@ pipeline:
               infrastructure:
                 type: KubernetesDirect
                 spec:
-                  connectorRef: k8s_cluster
-                  namespace: harness-delegate-ng
-                  serviceAccountName: shemer-delegate
+                  connectorRef: <+input>
+                  namespace: <+input>
+                  serviceAccountName: <+input>
               execution:
                 steps:
                   - step:
@@ -56,13 +68,20 @@ pipeline:
                       spec:
                         image:
                           type: docker_v2
-                          name: ghcr.io/shemreader/coderabbit-test
+                          name: <+input>
                           tag: <+pipeline.sequenceId>
-                          domain: ghcr.io
+                          domain: <+input>
+        failureStrategies:
+          - onFailure:
+              errors:
+                - AllErrors
+              action:
+                type: MarkAsFailure
     - stage:
         name: deploy to dev
         identifier: deploy_to_dev
-        description: ""
+        description: "Deploy to dev environment"
+        type: Deployment
         when:
           pipelineStatus: Success
           condition: <+trigger.event> != "PR"
@@ -73,30 +92,37 @@ pipeline:
             type: Deployment
             spec:
               service:
-                serviceRef: emp_api
+                serviceRef: <+input>
                 serviceInputs:
                   serviceDefinition:
                     type: Kubernetes
                     spec:
                       artifacts:
                         primary:
-                          primaryArtifactRef: coderabbittest
+                          primaryArtifactRef: <+input>
                           sources: ""
               environment:
-                environmentRef: dev
+                environmentRef: <+input>
                 infrastructureDefinitions:
-                  - identifier: k8s_dev
+                  - identifier: <+input>
               execution:
                 steps:
                   - step:
                       identifier: health_check
                       type: Http
                       spec:
-                        url: http://emp-api.<+infra.namespace>.svc.cluster.local/health
+                        url: <+input>
+        failureStrategies:
+          - onFailure:
+              errors:
+                - AllErrors
+              action:
+                type: StageRollback
     - stage:
         name: deploy to pre-prod
         identifier: deploy_to_pre_prod
-        description: ""
+        description: "Deploy to pre-prod environment"
+        type: Deployment
         when:
           pipelineStatus: Success
           condition: <+trigger.event> != "PR"
@@ -107,52 +133,68 @@ pipeline:
             type: Deployment
             spec:
               service:
-                serviceRef: emp_api
+                serviceRef: <+input>
                 serviceInputs:
                   serviceDefinition:
                     type: Kubernetes
                     spec:
                       artifacts:
                         primary:
-                          primaryArtifactRef: coderabbittest
+                          primaryArtifactRef: <+input>
               environment:
-                environmentRef: pre_prod
+                environmentRef: <+input>
                 infrastructureDefinitions:
-                  - identifier: k8s_pre_prod
+                  - identifier: <+input>
               execution:
                 steps:
                   - step:
                       identifier: health_check
                       type: Http
                       spec:
-                        url: http://emp-api.<+infra.namespace>.svc.cluster.local/health
+                        url: <+input>
+        failureStrategies:
+          - onFailure:
+              errors:
+                - AllErrors
+              action:
+                type: StageRollback
     - stage:
         name: production approval
         identifier: production_approval
-        description: ""
+        description: "Manual approval before production deployment"
+        type: Approval
         when:
           pipelineStatus: Success
           condition: <+trigger.event> != "PR"
-        template:
-          templateRef: Golden_Approval_Template
-          versionLabel: v1
-          templateInputs:
-            type: Approval
-            spec:
-              execution:
-                steps:
-                  - step:
-                      identifier: approve_deployment
-                      type: HarnessApproval
-                      spec:
-                        approvalMessage: Please review and approve deployment to Production
-                        approvers:
-                          userGroups:
-                            - _project_all_users
+        spec:
+          execution:
+            steps:
+              - step:
+                  name: Approve Deployment
+                  identifier: approve_deployment
+                  type: HarnessApproval
+                  timeout: 1d
+                  spec:
+                    approvalMessage: <+input>
+                    includePipelineExecutionHistory: true
+                    isAutoRejectEnabled: false
+                    approvers:
+                      minimumCount: 1
+                      disallowPipelineExecutor: true
+                      userGroups:
+                        - <+input>
+                    approverInputs: []
+        failureStrategies:
+          - onFailure:
+              errors:
+                - AllErrors
+              action:
+                type: MarkAsFailure
     - stage:
         name: deploy to production
         identifier: deploy_to_production
-        description: ""
+        description: "Deploy to production environment"
+        type: Deployment
         when:
           pipelineStatus: Success
           condition: <+trigger.event> != "PR"
@@ -163,24 +205,28 @@ pipeline:
             type: Deployment
             spec:
               service:
-                serviceRef: emp_api
+                serviceRef: <+input>
                 serviceInputs:
                   serviceDefinition:
                     type: Kubernetes
                     spec:
                       artifacts:
                         primary:
-                          primaryArtifactRef: coderabbittest
+                          primaryArtifactRef: <+input>
               environment:
-                environmentRef: prod
+                environmentRef: <+input>
                 infrastructureDefinitions:
-                  - identifier: k8s_prod
+                  - identifier: <+input>
               execution:
                 steps:
                   - step:
                       identifier: health_check
                       type: Http
                       spec:
-                        url: http://emp-api.<+infra.namespace>.svc.cluster.local/health
-  identifier: test_pipeline
-  name: test pipeline
+                        url: <+input>
+        failureStrategies:
+          - onFailure:
+              errors:
+                - AllErrors
+              action:
+                type: StageRollback
