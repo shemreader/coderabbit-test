@@ -1,0 +1,17 @@
+inputSet:
+  name: PR Build
+  identifier: pr_build
+  orgIdentifier: default
+  projectIdentifier: shemer_test
+  description: Build from pull request (use with PR triggers)
+  tags:
+    ai_generated: ""
+  pipeline:
+    identifier: test_pipeline
+    properties:
+      ci:
+        codebase:
+          build:
+            type: PR
+            spec:
+              number: <+trigger.prNumber>
