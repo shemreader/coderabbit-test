@@ -1,0 +1,17 @@
+inputSet:
+  name: Develop Branch
+  identifier: develop_branch
+  orgIdentifier: default
+  projectIdentifier: shemer_test
+  description: Build from develop branch
+  tags:
+    ai_generated: ""
+  pipeline:
+    identifier: test_pipeline
+    properties:
+      ci:
+        codebase:
+          build:
+            type: branch
+            spec:
+              branch: develop
