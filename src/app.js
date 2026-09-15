@@ -28,7 +28,8 @@ app.get("/demonew", (req, res) => {
 app.get("/demoold", (req, res) => {
     res.json({
         shemer: "sucks",
-        scott: "rules"
+        scott: "rules",
+        test: "test"
     });
 });
 
