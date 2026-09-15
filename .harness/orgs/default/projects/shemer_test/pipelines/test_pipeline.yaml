@@ -8,8 +8,8 @@ pipeline:
   properties:
     ci:
       codebase:
-        connectorRef: <+input>
-        repoName: <+input>
+        connectorRef: shemer_github
+        repoName: coderabbit-test
         build: <+input>
   stages:
     - stage:
@@ -22,20 +22,14 @@ pipeline:
           templateInputs:
             type: CI
             spec:
-              infrastructure:
-                type: KubernetesDirect
-                spec:
-                  connectorRef: <+input>
-                  namespace: <+input>
-                  serviceAccountName: <+input>
               execution:
                 steps:
                   - step:
                       identifier: buildAndPushImage
                       type: BuildAndPushDockerRegistry
                       spec:
-                        connectorRef: <+input>
-                        repo: <+input>
+                        connectorRef: ahemer_ghcr
+                        repo: ghcr.io/shemreader/coderabbit-test
     - stage:
         name: security scan
         identifier: security_scan
@@ -46,12 +40,6 @@ pipeline:
           templateInputs:
             type: SecurityTests
             spec:
-              infrastructure:
-                type: KubernetesDirect
-                spec:
-                  connectorRef: <+input>
-                  namespace: <+input>
-                  serviceAccountName: <+input>
               execution:
                 steps:
                   - step:
@@ -60,9 +48,9 @@ pipeline:
                       spec:
                         image:
                           type: docker_v2
-                          name: <+input>
+                          name: ghcr.io/shemreader/coderabbit-test
                           tag: <+pipeline.sequenceId>
-                          domain: <+input>
+                          domain: ghcr.io
     - stage:
         name: deploy to dev
         identifier: deploy_to_dev
@@ -77,18 +65,26 @@ pipeline:
             type: Deployment
             spec:
               service:
-                serviceRef: <+input>
-                serviceInputs: <+input>
+                serviceRef: emp_api
+                serviceInputs:
+                  serviceDefinition:
+                    type: Kubernetes
+                    spec:
+                      artifacts:
+                        primary:
+                          primaryArtifactRef: coderabbittest
+                          sources: ""
               environment:
-                environmentRef: <+input>
-                infrastructureDefinitions: <+input>
+                environmentRef: dev
+                infrastructureDefinitions:
+                  - identifier: k8s_dev
               execution:
                 steps:
                   - step:
                       identifier: health_check
                       type: Http
                       spec:
-                        url: <+input>
+                        url: http://emp-api.dev.svc.cluster.local/health
     - stage:
         name: deploy to pre-prod
         identifier: deploy_to_pre_prod
@@ -103,18 +99,25 @@ pipeline:
             type: Deployment
             spec:
               service:
-                serviceRef: <+input>
-                serviceInputs: <+input>
+                serviceRef: emp_api
+                serviceInputs:
+                  serviceDefinition:
+                    type: Kubernetes
+                    spec:
+                      artifacts:
+                        primary:
+                          primaryArtifactRef: coderabbittest
               environment:
-                environmentRef: <+input>
-                infrastructureDefinitions: <+input>
+                environmentRef: pre_prod
+                infrastructureDefinitions:
+                  - identifier: k8s_pre_prod
               execution:
                 steps:
                   - step:
                       identifier: health_check
                       type: Http
                       spec:
-                        url: <+input>
+                        url: http://emp-api.pre-prod.svc.cluster.local/health
     - stage:
         name: production approval
         identifier: production_approval
@@ -132,14 +135,14 @@ pipeline:
                   type: HarnessApproval
                   timeout: 1d
                   spec:
-                    approvalMessage: <+input>
+                    approvalMessage: Please review and approve deployment to Production
                     includePipelineExecutionHistory: true
                     isAutoRejectEnabled: false
                     approvers:
                       minimumCount: 1
                       disallowPipelineExecutor: true
                       userGroups:
-                        - <+input>
+                        - _project_all_users
                     approverInputs: []
         failureStrategies:
           - onFailure:
@@ -161,15 +164,22 @@ pipeline:
             type: Deployment
             spec:
               service:
-                serviceRef: <+input>
-                serviceInputs: <+input>
+                serviceRef: emp_api
+                serviceInputs:
+                  serviceDefinition:
+                    type: Kubernetes
+                    spec:
+                      artifacts:
+                        primary:
+                          primaryArtifactRef: coderabbittest
               environment:
-                environmentRef: <+input>
-                infrastructureDefinitions: <+input>
+                environmentRef: prod
+                infrastructureDefinitions:
+                  - identifier: k8s_prod
               execution:
                 steps:
                   - step:
                       identifier: health_check
                       type: Http
                       spec:
-                        url: <+input>
+                        url: http://emp-api.prod.svc.cluster.local/health
