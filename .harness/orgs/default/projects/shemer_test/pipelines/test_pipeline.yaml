@@ -15,13 +15,12 @@ pipeline:
     - stage:
         name: build
         identifier: build
-        description: "CI build stage using Golden CI Build Template"
+        description: CI build stage using Golden CI Build Template
         type: CI
         template:
           templateRef: Golden_CI_Build_Template
           versionLabel: v1
           templateInputs:
-            type: CI
             spec:
               infrastructure:
                 type: KubernetesDirect
@@ -46,13 +45,12 @@ pipeline:
     - stage:
         name: security scan
         identifier: security_scan
-        description: "Security scan stage using Golden Security Scan Template"
+        description: Security scan stage using Golden Security Scan Template
         type: SecurityTests
         template:
           templateRef: Golden_Security_Scan_Template
           versionLabel: v1
           templateInputs:
-            type: SecurityTests
             spec:
               infrastructure:
                 type: KubernetesDirect
@@ -80,7 +78,7 @@ pipeline:
     - stage:
         name: deploy to dev
         identifier: deploy_to_dev
-        description: "Deploy to dev environment"
+        description: Deploy to dev environment
         type: Deployment
         when:
           pipelineStatus: Success
@@ -89,7 +87,6 @@ pipeline:
           templateRef: Golden_K8s_Deploy_Template
           versionLabel: v1
           templateInputs:
-            type: Deployment
             spec:
               service:
                 serviceRef: <+input>
@@ -121,7 +118,7 @@ pipeline:
     - stage:
         name: deploy to pre-prod
         identifier: deploy_to_pre_prod
-        description: "Deploy to pre-prod environment"
+        description: Deploy to pre-prod environment
         type: Deployment
         when:
           pipelineStatus: Success
@@ -130,7 +127,6 @@ pipeline:
           templateRef: Golden_K8s_Deploy_Template
           versionLabel: v1
           templateInputs:
-            type: Deployment
             spec:
               service:
                 serviceRef: <+input>
@@ -161,7 +157,7 @@ pipeline:
     - stage:
         name: production approval
         identifier: production_approval
-        description: "Manual approval before production deployment"
+        description: Manual approval before production deployment
         type: Approval
         when:
           pipelineStatus: Success
@@ -193,7 +189,7 @@ pipeline:
     - stage:
         name: deploy to production
         identifier: deploy_to_production
-        description: "Deploy to production environment"
+        description: Deploy to production environment
         type: Deployment
         when:
           pipelineStatus: Success
@@ -202,7 +198,6 @@ pipeline:
           templateRef: Golden_K8s_Deploy_Template
           versionLabel: v1
           templateInputs:
-            type: Deployment
             spec:
               service:
                 serviceRef: <+input>
