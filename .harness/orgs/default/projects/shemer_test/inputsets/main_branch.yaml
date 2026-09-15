@@ -1,0 +1,17 @@
+inputSet:
+  name: Main Branch
+  identifier: main_branch
+  orgIdentifier: default
+  projectIdentifier: shemer_test
+  description: Build from main branch
+  tags:
+    ai_generated: ""
+  pipeline:
+    identifier: test_pipeline
+    properties:
+      ci:
+        codebase:
+          build:
+            type: branch
+            spec:
+              branch: main
