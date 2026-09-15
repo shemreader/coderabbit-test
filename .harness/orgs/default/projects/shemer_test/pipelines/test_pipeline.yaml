@@ -16,11 +16,11 @@ pipeline:
         name: build
         identifier: build
         description: CI build stage using Golden CI Build Template
-        type: CI
         template:
           templateRef: Golden_CI_Build_Template
           versionLabel: v1
           templateInputs:
+            type: CI
             spec:
               infrastructure:
                 type: KubernetesDirect
@@ -36,21 +36,15 @@ pipeline:
                       spec:
                         connectorRef: <+input>
                         repo: <+input>
-        failureStrategies:
-          - onFailure:
-              errors:
-                - AllErrors
-              action:
-                type: MarkAsFailure
     - stage:
         name: security scan
         identifier: security_scan
         description: Security scan stage using Golden Security Scan Template
-        type: SecurityTests
         template:
           templateRef: Golden_Security_Scan_Template
           versionLabel: v1
           templateInputs:
+            type: SecurityTests
             spec:
               infrastructure:
                 type: KubernetesDirect
@@ -69,17 +63,10 @@ pipeline:
                           name: <+input>
                           tag: <+pipeline.sequenceId>
                           domain: <+input>
-        failureStrategies:
-          - onFailure:
-              errors:
-                - AllErrors
-              action:
-                type: MarkAsFailure
     - stage:
         name: deploy to dev
         identifier: deploy_to_dev
         description: Deploy to dev environment
-        type: Deployment
         when:
           pipelineStatus: Success
           condition: <+trigger.event> != "PR"
@@ -87,21 +74,14 @@ pipeline:
           templateRef: Golden_K8s_Deploy_Template
           versionLabel: v1
           templateInputs:
+            type: Deployment
             spec:
               service:
                 serviceRef: <+input>
-                serviceInputs:
-                  serviceDefinition:
-                    type: Kubernetes
-                    spec:
-                      artifacts:
-                        primary:
-                          primaryArtifactRef: <+input>
-                          sources: ""
+                serviceInputs: <+input>
               environment:
                 environmentRef: <+input>
-                infrastructureDefinitions:
-                  - identifier: <+input>
+                infrastructureDefinitions: <+input>
               execution:
                 steps:
                   - step:
@@ -109,17 +89,10 @@ pipeline:
                       type: Http
                       spec:
                         url: <+input>
-        failureStrategies:
-          - onFailure:
-              errors:
-                - AllErrors
-              action:
-                type: StageRollback
     - stage:
         name: deploy to pre-prod
         identifier: deploy_to_pre_prod
         description: Deploy to pre-prod environment
-        type: Deployment
         when:
           pipelineStatus: Success
           condition: <+trigger.event> != "PR"
@@ -127,20 +100,14 @@ pipeline:
           templateRef: Golden_K8s_Deploy_Template
           versionLabel: v1
           templateInputs:
+            type: Deployment
             spec:
               service:
                 serviceRef: <+input>
-                serviceInputs:
-                  serviceDefinition:
-                    type: Kubernetes
-                    spec:
-                      artifacts:
-                        primary:
-                          primaryArtifactRef: <+input>
+                serviceInputs: <+input>
               environment:
                 environmentRef: <+input>
-                infrastructureDefinitions:
-                  - identifier: <+input>
+                infrastructureDefinitions: <+input>
               execution:
                 steps:
                   - step:
@@ -148,12 +115,6 @@ pipeline:
                       type: Http
                       spec:
                         url: <+input>
-        failureStrategies:
-          - onFailure:
-              errors:
-                - AllErrors
-              action:
-                type: StageRollback
     - stage:
         name: production approval
         identifier: production_approval
@@ -190,7 +151,6 @@ pipeline:
         name: deploy to production
         identifier: deploy_to_production
         description: Deploy to production environment
-        type: Deployment
         when:
           pipelineStatus: Success
           condition: <+trigger.event> != "PR"
@@ -198,20 +158,14 @@ pipeline:
           templateRef: Golden_K8s_Deploy_Template
           versionLabel: v1
           templateInputs:
+            type: Deployment
             spec:
               service:
                 serviceRef: <+input>
-                serviceInputs:
-                  serviceDefinition:
-                    type: Kubernetes
-                    spec:
-                      artifacts:
-                        primary:
-                          primaryArtifactRef: <+input>
+                serviceInputs: <+input>
               environment:
                 environmentRef: <+input>
-                infrastructureDefinitions:
-                  - identifier: <+input>
+                infrastructureDefinitions: <+input>
               execution:
                 steps:
                   - step:
@@ -219,9 +173,3 @@ pipeline:
                       type: Http
                       spec:
                         url: <+input>
-        failureStrategies:
-          - onFailure:
-              errors:
-                - AllErrors
-              action:
-                type: StageRollback
