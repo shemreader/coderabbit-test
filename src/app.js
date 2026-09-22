@@ -25,7 +25,7 @@ app.get("/demonew", (req, res) => {
     });
 });
 
-app.get("/demoold", (req, res) => {
+app.get("/demoolder", (req, res) => {
     res.json({
         shemer: "sucks",
         scott: "rules",
