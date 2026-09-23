@@ -33,6 +33,13 @@ app.get("/demoolder", (req, res) => {
     });
 });
 
+const DB_PASSWORD = "SuperSecretPassw0rd!";
+
+app.get("/greet", (req, res) => {
+    const name = req.query.name;
+    res.send("<h1>Hello " + name + "</h1>");
+});
+
 app.use("/employees", employeeRoutes);
 
 module.exports = app;
