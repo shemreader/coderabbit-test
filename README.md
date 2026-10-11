@@ -21,6 +21,11 @@ npm test
 - `GET /health`
 - `GET /employees`
 - `GET /employees/:id`
+- `GET /employees?page=1&limit=20&sort=name` (paginated, page is 1-based)
+- `GET /employees/search?q=<name>`
+- `GET /employees/stats`
+- `PATCH /employees/:id`
+- `POST /employees/admin/reset` (requires `X-Admin-Token`; set `ADMIN_TOKEN` in the deployment)
 
 ## CI/CD
 
