@@ -47,3 +47,26 @@ pipeline:
                           name: <+input>
                           tag: <+input>
                           domain: <+input>
+    - stage:
+        name: deploy
+        identifier: deploy
+        tags: {}
+        template:
+          templateRef: Golden_K8s_Deploy_Template
+          versionLabel: v1
+          templateInputs:
+            type: Deployment
+            spec:
+              service:
+                serviceRef: <+input>
+                serviceInputs: <+input>
+              environment:
+                environmentRef: <+input>
+                infrastructureDefinitions: <+input>
+              execution:
+                steps:
+                  - step:
+                      identifier: health_check
+                      type: Http
+                      spec:
+                        url: <+input>
