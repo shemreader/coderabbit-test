@@ -16,9 +16,34 @@ pipeline:
         template:
           templateRef: Golden_CI_Build_Template
           versionLabel: v1
+          templateInputs:
+            type: CI
+            spec:
+              execution:
+                steps:
+                  - step:
+                      identifier: buildAndPushImage
+                      type: BuildAndPushDockerRegistry
+                      spec:
+                        connectorRef: <+input>
+                        repo: <+input>
     - stage:
         name: security
         identifier: security
         template:
           templateRef: Golden_Security_Scan_Template
           versionLabel: v1
+          templateInputs:
+            type: SecurityTests
+            spec:
+              execution:
+                steps:
+                  - step:
+                      identifier: container_scan
+                      type: AquaTrivy
+                      spec:
+                        image:
+                          type: docker_v2
+                          name: <+input>
+                          tag: <+input>
+                          domain: <+input>
