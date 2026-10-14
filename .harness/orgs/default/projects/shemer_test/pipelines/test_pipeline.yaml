@@ -1,9 +1,11 @@
 pipeline:
   name: test pipeline
   identifier: test_pipeline
+  description: Builds an image, scans it, and deploys to Kubernetes, with an added Prisma Cloud scan stage.
   projectIdentifier: shemer_test
   orgIdentifier: default
-  tags: {}
+  tags:
+    ai_generated: ""
   properties:
     ci:
       codebase:
@@ -70,3 +72,43 @@ pipeline:
                       type: Http
                       spec:
                         url: <+input>
+    - stage:
+        name: gggg
+        identifier: gggg
+        description: Prisma Cloud container image scan
+        type: SecurityTests
+        spec:
+          cloneCodebase: false
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+          execution:
+            steps:
+              - step:
+                  type: PrismaCloud
+                  name: Prisma Cloud Scan
+                  identifier: prisma_cloud_scan
+                  spec:
+                    mode: orchestration
+                    config: default
+                    target:
+                      type: container
+                      name: vbvbv
+                      variant: vb
+                    advanced:
+                      log:
+                        level: info
+                    privileged: true
+                    image:
+                      type: docker_v2
+                      name: vbvbv
+                      tag: vb
+                      domain: vv
+                    auth:
+                      access_id: <+secrets.getValue("account.slack_webhook")>
+                      access_token: <+secrets.getValue("shemer_git_token")>
+                      domain: vbvbv
+        tags: {}
