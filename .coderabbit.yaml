@@ -1,0 +1,23 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+# See https://docs.coderabbit.ai/reference/configuration
+language: "en-US"
+
+reviews:
+  profile: "chill"
+  auto_review:
+    enabled: true
+    drafts: false
+  path_filters:
+    - "!**/node_modules/**"
+    - "!**/coverage/**"
+  path_instructions:
+    - path: "src/**/*.js"
+      instructions: |
+        Review Express handlers for input validation, correct HTTP status codes,
+        and safe handling of errors and user-controlled data. Preserve the
+        existing API behavior unless the change intentionally changes it.
+    - path: "tests/**/*.js"
+      instructions: |
+        Check that tests cover normal behavior and relevant invalid-input and
+        not-found cases. Keep tests isolated and consistent with the existing
+        Jest and Supertest patterns.
