@@ -7,6 +7,14 @@ reviews:
   auto_review:
     enabled: true
     drafts: false
+  # Request changes for blocking findings; approve once required threads are
+  # resolved and the merge/security risk is at most "low".
+  auto_approvals:
+    enabled: true
+    max_merge_risk: low
+    max_security_risk: low
+    # Default is true, which lets the MR author run "@coderabbitai approve" themselves.
+    allow_author_approval: false
   path_filters:
     - "!**/node_modules/**"
     - "!**/coverage/**"
