@@ -20,6 +20,7 @@ npm test
 
 - `GET /health`
 - `GET /employees`
+- `GET /employees?department=Engineering` (case-insensitive; omit the query to list all)
 - `GET /employees/:id`
 
 ## CI/CD

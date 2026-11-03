@@ -81,6 +81,23 @@ git diff
 
 ## 5. Commit and push the branch
 
+This checkout may have both hosting remotes configured. Check their URLs and choose the intended destination explicitly:
+
+```bash
+git remote -v
+git push -u origin feature/short-description   # GitLab in this checkout
+git push -u github feature/short-description  # GitHub
+```
+
+Here, `origin` points to GitLab and `github` points to GitHub. A plain `git push` uses the branch's configured upstream, so use the remote name when you need to choose the destination. Before pushing to a remote's `main`, fetch and inspect its history; do not overwrite or force-push if the remote has commits you do not have:
+
+```bash
+git fetch github
+git log --oneline --left-right main...github/main
+```
+
+Git credentials are managed per host: GitLab and GitHub may require separate authentication. Do not put access tokens in remote URLs, source files, command history, or commit messages.
+
 ```bash
 git add <files>
 git commit -m "Describe the change"

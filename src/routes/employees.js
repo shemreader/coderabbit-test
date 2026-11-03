@@ -4,7 +4,24 @@ const router = express.Router();
 const employees = require("../data/employees.json");
 
 router.get("/", (req, res) => {
-  res.json(employees);
+  const { department } = req.query;
+
+  if (department === undefined) {
+    return res.json(employees);
+  }
+
+  if (typeof department !== "string" || department.trim() === "") {
+    return res.status(400).json({
+      message: "Department must be a non-empty string"
+    });
+  }
+
+  const normalizedDepartment = department.trim().toLowerCase();
+  const filteredEmployees = employees.filter(
+    employee => employee.department.toLowerCase() === normalizedDepartment
+  );
+
+  res.json(filteredEmployees);
 });
 
 router.get("/:id", (req, res) => {
